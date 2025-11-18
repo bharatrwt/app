@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Businesses - Admin{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md h-16 flex items-center px-6">
+        <div class="flex-1 flex items-center gap-4">
+            <a href="/admin/dashboard" class="text-gray-600 hover:text-gray-900">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </a>
+            <h1 class="text-xl font-semibold text-gray-900">Manage Businesses</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="text-sm text-gray-600">{{ session.name }}</span>
+            <a href="/auth/logout" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium">
+                Logout
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-medium text-gray-900">Business Accounts</h2>
+            <button onclick="openCreateModal()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-all">
+                Add New Business
+            </button>
+        </div>
+        
+        <!-- Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Business Name</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Phone ID</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">WABA ID</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Status</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Created</th>
+                            <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wide">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="businesses-table" class="divide-y divide-gray-200">
+                        <!-- Businesses will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="empty-state" class="hidden text-center py-12">
+                <svg class="mx-auto w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+                <p class="text-gray-600">No businesses yet. Click "Add New Business" to create one.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create/Edit Modal -->
+<div id="business-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl max-w-2xl w-full p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h3 id="modal-title" class="text-2xl font-semibold text-gray-900">Add Business</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <form id="business-form" class="space-y-4">
+            <input type="hidden" id="business-id" value="">
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Business Name <span class="text-red-600">*</span></label>
+                <input type="text" id="business_name" required class="w-full h-11 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Business Token <span class="text-red-600">*</span></label>
+                <input type="text" id="business_token" required class="w-full h-11 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <p class="text-xs text-gray-500 mt-1">This will be encrypted for security</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone ID <span class="text-red-600">*</span></label>
+                    <input type="text" id="phone_id" required class="w-full h-11 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">WABA ID <span class="text-red-600">*</span></label>
+                    <input type="text" id="waba_id" required class="w-full h-11 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Status <span class="text-red-600">*</span></label>
+                <select id="status" required class="w-full h-11 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" onclick="closeModal()" class="px-6 py-2.5 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg">
+                    Save Business
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/businesses.js"></script>
+{% endblock %}
